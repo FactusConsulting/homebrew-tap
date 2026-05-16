@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation — speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/archive/refs/tags/v0.1.2.tar.gz"
-  sha256 "e55855a4ece37abcdbf8f59a710ed3844bb31520c5d63679300a94af26766031"
+  url "https://github.com/FactusConsulting/whisper-dictate/archive/refs/tags/v0.2.0.tar.gz"
+  sha256 "41956fecafd3a5ea0e6930ae35e723c1d5c6e770d33d62d1e6bf694c695ab8d0"
   license "MIT"
 
   depends_on "portaudio"
@@ -28,12 +28,16 @@ class WhisperDictate < Formula
       (~/.venv-whisper-dictate) and downloads the Whisper model
       (~1.5 GB). It runs on CPU here (no NVIDIA acceleration via brew).
 
-      Linux input limitation: global push-to-talk and synthetic typing
-      use pynput, which is X11-only. On GNOME/Wayland the compositor
-      blocks both — log in on an Xorg session, or run:
-          whisper-dictate --no-type
-      For --paste install a clipboard tool: wl-clipboard (Wayland) or
-      xclip (X11).
+      Wayland (Ubuntu 24.04/26.04): global hotkeys work via evdev.
+      One-time setup required:
+        sudo usermod -aG input $USER   # add to input group
+        # log out and back in
+        whisper-dictate --paste --key shift_r+ctrl_r   # builds venv + downloads model
+
+      The default hotkey is right Ctrl (ctrl_r). Chord keys are supported:
+        whisper-dictate --paste --key shift_r+ctrl_r
+
+      For --paste install a clipboard tool: wl-clipboard (Wayland) or xclip (X11).
     EOS
   end
 
