@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation — speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/archive/refs/tags/v0.2.4.tar.gz"
-  sha256 "47db9ad9fcb790850071bd77a135bbb5a1b30dab9e87386984d204fde8a72bf6"
+  url "https://github.com/FactusConsulting/whisper-dictate/archive/refs/tags/v0.2.5.tar.gz"
+  sha256 "adba4523310d95ff1b31f46e7d28a0fdba05f9e42fc6157d0ef7ded11eac77a7"
   license "MIT"
 
   depends_on "portaudio"
@@ -36,7 +36,7 @@ class WhisperDictate < Formula
       starts the ydotoold daemon, and creates a GNOME autostart entry.
       Log out and back in afterwards, then:
 
-        VOICEPI_XKB_LAYOUT=dk whisper-dictate --key shift_r+ctrl_r --lang da
+        whisper-dictate --key shift_r+ctrl_r --lang da
     EOS
   end
 
