@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation — speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/archive/refs/tags/v0.2.0.tar.gz"
-  sha256 "41956fecafd3a5ea0e6930ae35e723c1d5c6e770d33d62d1e6bf694c695ab8d0"
+  url "https://github.com/FactusConsulting/whisper-dictate/archive/refs/tags/v0.2.1.tar.gz"
+  sha256 "00612f68926e64bdd9008e6ff11fadea05f322e77c7d1c1eba48e50cededb316"
   license "MIT"
 
   depends_on "portaudio"
@@ -37,7 +37,13 @@ class WhisperDictate < Formula
       The default hotkey is right Ctrl (ctrl_r). Chord keys are supported:
         whisper-dictate --paste --key shift_r+ctrl_r
 
-      For --paste install a clipboard tool: wl-clipboard (Wayland) or xclip (X11).
+      For --paste on Wayland install ydotool and wl-clipboard:
+        sudo apt install ydotool wl-clipboard
+      For --paste on X11 install xclip:
+        sudo apt install xclip
+
+      In terminal emulators (ghostty, gnome-terminal) pass --paste-key ctrl+shift+v
+      as terminals use Ctrl+Shift+V for paste (not Ctrl+V).
     EOS
   end
 
