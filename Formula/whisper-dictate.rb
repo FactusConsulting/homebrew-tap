@@ -10,6 +10,7 @@ class WhisperDictate < Formula
 
   def install
     libexec.install "voice_pi.py", "requirements-cpu.txt", "setup.sh", "README.md", "LICENSE"
+    libexec.install Dir["vp_*.py"]   # split modules imported by voice_pi.py (empty pre-0.2.28)
     libexec.install "ubuntu26.04"
     chmod 0755, libexec/"setup.sh"
     chmod 0755, libexec/"ubuntu26.04/setup.sh"
