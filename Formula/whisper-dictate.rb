@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation — speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/archive/refs/tags/v0.2.52.tar.gz"
-  sha256 "c16d8008839049c01607e59b95186a86f3f819a04a6943153375a6918da9c9e7"
+  url "https://github.com/FactusConsulting/whisper-dictate/archive/refs/tags/v0.2.53.tar.gz"
+  sha256 "5483161616f1108068b0dc8f44a0470001d9da68417bb35c73897c522b5499e8"
   license "MIT"
 
   depends_on "portaudio"
