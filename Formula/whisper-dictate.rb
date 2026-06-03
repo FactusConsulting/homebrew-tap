@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.31/whisper-dictate-linux-0.3.31.zip"
-  sha256 "63e2466b07542fea424e740e6c6f5bf4bcc3a1415e00e0241d8e4372c852d391"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.32/whisper-dictate-linux-0.3.32.zip"
+  sha256 "f092003d171b810be6552225d7b07637227bd788d7a6ea8310d661081b30b255"
   license "MIT"
 
   depends_on "portaudio"
@@ -23,6 +23,46 @@ class WhisperDictate < Formula
       export VOICEPI_SKIP_SYSCHECK=1
       exec "#{libexec}/whisper-dictate" "$@"
     SH
+  end
+
+  def post_install
+    return unless OS.linux?
+
+    home = ENV["HOME"]
+    return if home.nil? || home.empty?
+
+    exe = bin/"whisper-dictate"
+    repair_linux_desktop_entry(
+      Pathname.new(home)/".local/share/applications/whisper-dictate.desktop",
+      exe,
+      false,
+    )
+    repair_linux_desktop_entry(
+      Pathname.new(home)/".config/autostart/whisper-dictate.desktop",
+      exe,
+      true,
+    )
+  end
+
+  def repair_linux_desktop_entry(path, exe, autostart)
+    return unless path.exist?
+
+    raw = path.read
+    return unless raw.include?("whisper-dictate")
+
+    path.dirname.mkpath
+    path.write <<~DESKTOP
+      [Desktop Entry]
+      Name=Whisper Dictate
+      Comment=Push-to-talk dictation settings and runtime control
+      Exec=#{exe} ui
+      Icon=audio-input-microphone
+      Terminal=false
+      Type=Application
+      Categories=Utility;AudioVideo;Audio;
+      StartupNotify=true
+      #{autostart ? "X-GNOME-Autostart-enabled=true" : ""}
+    DESKTOP
   end
 
   def caveats
