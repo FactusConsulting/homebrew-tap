@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.35/whisper-dictate-linux-0.3.35.zip"
-  sha256 "29cbc31056506d5c62a2ef92326a6945c59a55fe3115f7ad41ba7a9d48a560cb"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.36/whisper-dictate-linux-0.3.36.zip"
+  sha256 "2f67fa286664a712e2cfdef55e1cbcd425af6f9a7ac87f1222b7c2eff5320f21"
   license "MIT"
 
   depends_on "portaudio"
@@ -21,7 +21,7 @@ class WhisperDictate < Formula
     repair_linux_desktop_entry() {
       local path="$1"
       local autostart="$2"
-      local exec_path="#{bin}/whisper-dictate"
+      local exec_path="#{opt_bin}/whisper-dictate"
       [ -n "${HOME:-}" ] || return 0
       [ -f "$path" ] || return 0
       grep -Fq "whisper-dictate" "$path" || return 0
@@ -66,12 +66,12 @@ end
     linux_desktop_homes.each do |home|
       repair_linux_desktop_entry(
         Pathname.new(home)/".local/share/applications/whisper-dictate.desktop",
-        bin/"whisper-dictate",
+        opt_bin/"whisper-dictate",
         false,
       )
       repair_linux_desktop_entry(
         Pathname.new(home)/".config/autostart/whisper-dictate.desktop",
-        bin/"whisper-dictate",
+        opt_bin/"whisper-dictate",
         true,
       )
     end
