@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.39/whisper-dictate-linux-0.3.39.zip"
-  sha256 "49b2d80073752f7c0b5c326a7730af7d56b4852e546bd3a1f21a321da7a1409f"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.40/whisper-dictate-linux-0.3.40.zip"
+  sha256 "0fa91b2494a17caa0d6d2e792de20311a9ad0a554ed580cd385ea088763b9b34"
   license "MIT"
 
   depends_on "portaudio"
@@ -21,10 +21,11 @@ class WhisperDictate < Formula
     install_linux_app_icon() {
       local home="$1"
       local icon_src="#{libexec}/assets/whisper-dictate-logo.svg"
+      local icon_path="$home/.local/share/icons/hicolor/scalable/apps/whisper-dictate.svg"
       [ -n "$home" ] || return 0
       [ -f "$icon_src" ] || return 0
       mkdir -p "$home/.local/share/icons/hicolor/scalable/apps" || return 0
-      cp "$icon_src" "$home/.local/share/icons/hicolor/scalable/apps/whisper-dictate.svg" 2>/dev/null || true
+      cp "$icon_src" "$icon_path" 2>/dev/null || true
       gtk-update-icon-cache -q "$home/.local/share/icons/hicolor" 2>/dev/null || true
     }
 
@@ -32,12 +33,13 @@ class WhisperDictate < Formula
       local path="$1"
       local autostart="$2"
       local exec_path="#{opt_bin}/whisper-dictate"
+      local icon_path="${HOME:-}/.local/share/icons/hicolor/scalable/apps/whisper-dictate.svg"
       [ -n "${HOME:-}" ] || return 0
       install_linux_app_icon "${HOME:-}"
       [ -f "$path" ] || return 0
       grep -Fq "whisper-dictate" "$path" || return 0
       if grep -Fq "Exec=${exec_path} ui" "$path" &&
-         grep -Fq "Icon=whisper-dictate" "$path" &&
+         grep -Fq "Icon=${icon_path}" "$path" &&
          grep -Fq "StartupWMClass=whisper-dictate" "$path"; then
         return 0
       fi
@@ -48,7 +50,7 @@ class WhisperDictate < Formula
         printf '%s\n' 'Name=Whisper Dictate'
         printf '%s\n' 'Comment=Push-to-talk dictation settings and runtime control'
         printf 'Exec=%s ui\n' "$exec_path"
-        printf '%s\n' 'Icon=whisper-dictate'
+        printf 'Icon=%s\n' "$icon_path"
         printf '%s\n' 'Terminal=false'
         printf '%s\n' 'Type=Application'
         printf '%s\n' 'Categories=Utility;AudioVideo;Audio;'
@@ -85,11 +87,13 @@ end
         Pathname.new(home)/".local/share/applications/whisper-dictate.desktop",
         opt_bin/"whisper-dictate",
         false,
+        home,
       )
       repair_linux_desktop_entry(
         Pathname.new(home)/".config/autostart/whisper-dictate.desktop",
         opt_bin/"whisper-dictate",
         true,
+        home,
       )
     end
   end
@@ -99,13 +103,14 @@ end
     homes.compact.uniq.select { |home| File.directory?(home) }
   end
 
-  def repair_linux_desktop_entry(path, exe, autostart)
+  def repair_linux_desktop_entry(path, exe, autostart, home)
     return unless path.exist?
 
     raw = path.read
     return unless raw.include?("whisper-dictate")
+    icon_path = linux_app_icon_path(home)
     return if raw.include?("Exec=#{exe} ui") &&
-      raw.include?("Icon=whisper-dictate") &&
+      raw.include?("Icon=#{icon_path}") &&
       raw.include?("StartupWMClass=whisper-dictate")
 
     path.dirname.mkpath
@@ -114,7 +119,7 @@ end
       Name=Whisper Dictate
       Comment=Push-to-talk dictation settings and runtime control
       Exec=#{exe} ui
-      Icon=whisper-dictate
+      Icon=#{icon_path}
       Terminal=false
       Type=Application
       Categories=Utility;AudioVideo;Audio;
@@ -130,12 +135,16 @@ end
     icon_src = libexec/"assets/whisper-dictate-logo.svg"
     return unless icon_src.exist?
 
-    icon_dir = Pathname.new(home)/".local/share/icons/hicolor/scalable/apps"
-    icon_dir.mkpath
-    cp icon_src, icon_dir/"whisper-dictate.svg"
+    icon_path = linux_app_icon_path(home)
+    icon_path.dirname.mkpath
+    cp icon_src, icon_path
     quiet_system "gtk-update-icon-cache", "-q", (Pathname.new(home)/".local/share/icons/hicolor").to_s
   rescue Errno::EACCES, Errno::EPERM
     nil
+  end
+
+  def linux_app_icon_path(home)
+    Pathname.new(home)/".local/share/icons/hicolor/scalable/apps/whisper-dictate.svg"
   end
 
   def autostart_enabled_line(raw)
