@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.29/whisper-dictate-linux-0.3.29.zip"
-  sha256 "63f6ca078e8bd367e914e3b239e4527153643806224c83d39321a79d20f32636"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.30/whisper-dictate-linux-0.3.30.zip"
+  sha256 "62d789f9fd05b03cdd483fb66a9602fb2169f432ff610ee002962e3a5ee0febf"
   license "MIT"
 
   depends_on "portaudio"
@@ -18,7 +18,7 @@ class WhisperDictate < Formula
     py = Formula["python@3.12"].opt_bin/"python3.12"
     (bin/"whisper-dictate").write <<~SH
       #!/bin/bash
-      export VOICEPI_PYTHON="#{py}"
+      export VOICEPI_BOOTSTRAP_PYTHON="#{py}"
       export VOICEPI_APP_ROOT="#{libexec}"
       export VOICEPI_SKIP_SYSCHECK=1
       exec "#{libexec}/whisper-dictate" "$@"
