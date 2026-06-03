@@ -1,49 +1,51 @@
 class WhisperDictate < Formula
-  desc "Local push-to-talk dictation — speak prompts instead of typing them"
+  desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/archive/refs/tags/v0.3.26.tar.gz"
-  sha256 "dfb04c0dcd6d83e29993184a6ce757b88aeea5594b4b52aae812efb4c17903e4"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.27/whisper-dictate-linux-0.3.27.zip"
+  sha256 "1fff9f378d5c49c1c3a0d757e6d78389b61709fb8c350799c5502af46dde0a90"
   license "MIT"
 
   depends_on "portaudio"
   depends_on "python@3.12"
 
   def install
-    libexec.install "voice_pi.py", "requirements-cpu.txt", "setup.sh", "README.md", "LICENSE"
-    libexec.install Dir["vp_*.py"]   # split modules imported by voice_pi.py (empty pre-0.2.28)
-    libexec.install "ubuntu26.04"
-    chmod 0755, libexec/"setup.sh"
+    libexec.install Dir["whisper-dictate/*"]
+    chmod 0755, libexec/"whisper-dictate"
     chmod 0755, libexec/"ubuntu26.04/setup.sh"
+
     py = Formula["python@3.12"].opt_bin/"python3.12"
     (bin/"whisper-dictate").write <<~SH
       #!/bin/bash
       export VOICEPI_PYTHON="#{py}"
+      export VOICEPI_APP_ROOT="#{libexec}"
       export VOICEPI_SKIP_SYSCHECK=1
-      exec "#{libexec}/setup.sh" "$@"
+      exec "#{libexec}/whisper-dictate" "$@"
     SH
   end
 
   def caveats
     <<~EOS
       whisper-dictate builds a machine-local Python venv on first run
-      (~/.venv-whisper-dictate) and downloads the Whisper model (~1.5 GB).
-      It runs on CPU (no NVIDIA acceleration via brew).
+      (~/.venv-whisper-dictate) and downloads the selected STT model.
 
-      Ubuntu 26.04 / Wayland — one-time system setup:
+      Ubuntu 24.04/26.04 Wayland - one-time desktop setup:
 
-        bash "$(brew --prefix whisper-dictate)/libexec/ubuntu26.04/setup.sh"
+        whisper-dictate setup-ubuntu
 
-      This installs ydotool, sets up the input group and udev rules,
-      starts the ydotoold daemon, and creates a GNOME autostart entry.
-      Log out and back in afterwards, then:
+      Then start the desktop app:
 
-        whisper-dictate --key shift_r+ctrl_r --lang da
+        whisper-dictate ui
+
+      Terminal dictation is also available:
+
+        whisper-dictate run --key ctrl_r --lang da
     EOS
   end
 
   test do
     assert_path_exists libexec/"voice_pi.py"
+    assert_path_exists libexec/"whisper-dictate"
     assert_path_exists libexec/"ubuntu26.04/setup.sh"
-    assert_match "whisper-dictate", File.read(libexec/"README.md")
+    assert_match version.to_s, shell_output("#{bin}/whisper-dictate --version")
   end
 end
