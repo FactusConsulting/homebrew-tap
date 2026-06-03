@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.34/whisper-dictate-linux-0.3.34.zip"
-  sha256 "b73a9d211951113194b12fb790dc4e4a60e7c5224d30fa93e9ba005592723924"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.35/whisper-dictate-linux-0.3.35.zip"
+  sha256 "29cbc31056506d5c62a2ef92326a6945c59a55fe3115f7ad41ba7a9d48a560cb"
   license "MIT"
 
   depends_on "portaudio"
@@ -102,7 +102,6 @@ end
       StartupNotify=true
       #{autostart ? autostart_enabled_line(raw) : ""}
     DESKTOP
-    )
   rescue Errno::EACCES, Errno::EPERM
     nil
   end
