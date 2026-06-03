@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.37/whisper-dictate-linux-0.3.37.zip"
-  sha256 "c1678d5a44ff45f186cb108bbc0f3d1f8d9a54871ac9dc18785426dcb8b48610"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.38/whisper-dictate-linux-0.3.38.zip"
+  sha256 "5896d4a3c7ac8a3d773996aaf9dcbdd617ff29436afcac1f43fd6d72c28d36ef"
   license "MIT"
 
   depends_on "portaudio"
@@ -18,14 +18,29 @@ class WhisperDictate < Formula
     py = Formula["python@3.12"].opt_bin/"python3.12"
   (bin/"whisper-dictate").write <<~SH
     #!/bin/bash
+    install_linux_app_icon() {
+      local home="$1"
+      local icon_src="#{libexec}/assets/whisper-dictate-logo.svg"
+      [ -n "$home" ] || return 0
+      [ -f "$icon_src" ] || return 0
+      mkdir -p "$home/.local/share/icons/hicolor/scalable/apps" || return 0
+      cp "$icon_src" "$home/.local/share/icons/hicolor/scalable/apps/whisper-dictate.svg" 2>/dev/null || true
+      gtk-update-icon-cache -q "$home/.local/share/icons/hicolor" 2>/dev/null || true
+    }
+
     repair_linux_desktop_entry() {
       local path="$1"
       local autostart="$2"
       local exec_path="#{opt_bin}/whisper-dictate"
       [ -n "${HOME:-}" ] || return 0
+      install_linux_app_icon "${HOME:-}"
       [ -f "$path" ] || return 0
       grep -Fq "whisper-dictate" "$path" || return 0
-      grep -Fq "Exec=${exec_path} ui" "$path" && return 0
+      if grep -Fq "Exec=${exec_path} ui" "$path" &&
+         grep -Fq "Icon=whisper-dictate" "$path" &&
+         grep -Fq "StartupWMClass=whisper-dictate" "$path"; then
+        return 0
+      fi
 
       mkdir -p "$(dirname "$path")" || return 0
       {
@@ -33,11 +48,12 @@ class WhisperDictate < Formula
         printf '%s\n' 'Name=Whisper Dictate'
         printf '%s\n' 'Comment=Push-to-talk dictation settings and runtime control'
         printf 'Exec=%s ui\n' "$exec_path"
-        printf '%s\n' 'Icon=audio-input-microphone'
+        printf '%s\n' 'Icon=whisper-dictate'
         printf '%s\n' 'Terminal=false'
         printf '%s\n' 'Type=Application'
         printf '%s\n' 'Categories=Utility;AudioVideo;Audio;'
         printf '%s\n' 'StartupNotify=true'
+        printf '%s\n' 'StartupWMClass=whisper-dictate'
         if [ "$autostart" = "1" ]; then
           if grep -Fq 'X-GNOME-Autostart-enabled=false' "$path"; then
             printf '%s\n' 'X-GNOME-Autostart-enabled=false'
@@ -64,6 +80,7 @@ end
     return unless OS.linux?
 
     linux_desktop_homes.each do |home|
+      install_linux_app_icon(home)
       repair_linux_desktop_entry(
         Pathname.new(home)/".local/share/applications/whisper-dictate.desktop",
         opt_bin/"whisper-dictate",
@@ -87,7 +104,9 @@ end
 
     raw = path.read
     return unless raw.include?("whisper-dictate")
-    return if raw.include?("Exec=#{exe} ui")
+    return if raw.include?("Exec=#{exe} ui") &&
+      raw.include?("Icon=whisper-dictate") &&
+      raw.include?("StartupWMClass=whisper-dictate")
 
     path.dirname.mkpath
     File.write(path.to_s, <<~DESKTOP)
@@ -95,13 +114,26 @@ end
       Name=Whisper Dictate
       Comment=Push-to-talk dictation settings and runtime control
       Exec=#{exe} ui
-      Icon=audio-input-microphone
+      Icon=whisper-dictate
       Terminal=false
       Type=Application
       Categories=Utility;AudioVideo;Audio;
       StartupNotify=true
+      StartupWMClass=whisper-dictate
       #{autostart ? autostart_enabled_line(raw) : ""}
     DESKTOP
+  rescue Errno::EACCES, Errno::EPERM
+    nil
+  end
+
+  def install_linux_app_icon(home)
+    icon_src = libexec/"assets/whisper-dictate-logo.svg"
+    return unless icon_src.exist?
+
+    icon_dir = Pathname.new(home)/".local/share/icons/hicolor/scalable/apps"
+    icon_dir.mkpath
+    cp icon_src, icon_dir/"whisper-dictate.svg"
+    system "gtk-update-icon-cache", "-q", (Pathname.new(home)/".local/share/icons/hicolor").to_s
   rescue Errno::EACCES, Errno::EPERM
     nil
   end
