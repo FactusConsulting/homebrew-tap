@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.32/whisper-dictate-linux-0.3.32.zip"
-  sha256 "f092003d171b810be6552225d7b07637227bd788d7a6ea8310d661081b30b255"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.33/whisper-dictate-linux-0.3.33.zip"
+  sha256 "fe8e092031420acc3777d937c6f690ffad552cbe31b73d33c8a94c11bc704b89"
   license "MIT"
 
   depends_on "portaudio"
@@ -16,32 +16,70 @@ class WhisperDictate < Formula
     chmod 0755, libexec/"ubuntu26.04/setup.sh"
 
     py = Formula["python@3.12"].opt_bin/"python3.12"
-    (bin/"whisper-dictate").write <<~SH
-      #!/bin/bash
-      export VOICEPI_BOOTSTRAP_PYTHON="#{py}"
-      export VOICEPI_APP_ROOT="#{libexec}"
-      export VOICEPI_SKIP_SYSCHECK=1
-      exec "#{libexec}/whisper-dictate" "$@"
-    SH
-  end
+  (bin/"whisper-dictate").write <<~SH
+    #!/bin/bash
+    repair_linux_desktop_entry() {
+      local path="$1"
+      local autostart="$2"
+      local exec_path="#{bin}/whisper-dictate"
+      [ -n "${HOME:-}" ] || return 0
+      [ -f "$path" ] || return 0
+      grep -Fq "whisper-dictate" "$path" || return 0
+      grep -Fq "Exec=${exec_path} ui" "$path" && return 0
+
+      mkdir -p "$(dirname "$path")" || return 0
+      {
+        printf '%s\n' '[Desktop Entry]'
+        printf '%s\n' 'Name=Whisper Dictate'
+        printf '%s\n' 'Comment=Push-to-talk dictation settings and runtime control'
+        printf 'Exec=%s ui\n' "$exec_path"
+        printf '%s\n' 'Icon=audio-input-microphone'
+        printf '%s\n' 'Terminal=false'
+        printf '%s\n' 'Type=Application'
+        printf '%s\n' 'Categories=Utility;AudioVideo;Audio;'
+        printf '%s\n' 'StartupNotify=true'
+        if [ "$autostart" = "1" ]; then
+          if grep -Fq 'X-GNOME-Autostart-enabled=false' "$path"; then
+            printf '%s\n' 'X-GNOME-Autostart-enabled=false'
+          else
+            printf '%s\n' 'X-GNOME-Autostart-enabled=true'
+          fi
+        fi
+      } > "$path" 2>/dev/null || true
+    }
+
+    if [ "$(uname -s 2>/dev/null)" = "Linux" ]; then
+      repair_linux_desktop_entry "${HOME:-}/.local/share/applications/whisper-dictate.desktop" 0
+      repair_linux_desktop_entry "${HOME:-}/.config/autostart/whisper-dictate.desktop" 1
+    fi
+
+    export VOICEPI_BOOTSTRAP_PYTHON="#{py}"
+    export VOICEPI_APP_ROOT="#{libexec}"
+    export VOICEPI_SKIP_SYSCHECK=1
+    exec "#{libexec}/whisper-dictate" "$@"
+  SH
+end
 
   def post_install
     return unless OS.linux?
 
-    home = ENV["HOME"]
-    return if home.nil? || home.empty?
+    linux_desktop_homes.each do |home|
+      repair_linux_desktop_entry(
+        Pathname.new(home)/".local/share/applications/whisper-dictate.desktop",
+        bin/"whisper-dictate",
+        false,
+      )
+      repair_linux_desktop_entry(
+        Pathname.new(home)/".config/autostart/whisper-dictate.desktop",
+        bin/"whisper-dictate",
+        true,
+      )
+    end
+  end
 
-    exe = bin/"whisper-dictate"
-    repair_linux_desktop_entry(
-      Pathname.new(home)/".local/share/applications/whisper-dictate.desktop",
-      exe,
-      false,
-    )
-    repair_linux_desktop_entry(
-      Pathname.new(home)/".config/autostart/whisper-dictate.desktop",
-      exe,
-      true,
-    )
+  def linux_desktop_homes
+    homes = [ENV["HOME"], *Dir["/home/*"]]
+    homes.compact.uniq.select { |home| File.directory?(home) }
   end
 
   def repair_linux_desktop_entry(path, exe, autostart)
@@ -49,6 +87,7 @@ class WhisperDictate < Formula
 
     raw = path.read
     return unless raw.include?("whisper-dictate")
+    return if raw.include?("Exec=#{exe} ui")
 
     path.dirname.mkpath
     path.write <<~DESKTOP
@@ -61,8 +100,18 @@ class WhisperDictate < Formula
       Type=Application
       Categories=Utility;AudioVideo;Audio;
       StartupNotify=true
-      #{autostart ? "X-GNOME-Autostart-enabled=true" : ""}
+      #{autostart ? autostart_enabled_line(raw) : ""}
     DESKTOP
+  rescue Errno::EACCES, Errno::EPERM
+    nil
+  end
+
+  def autostart_enabled_line(raw)
+    if raw.include?("X-GNOME-Autostart-enabled=false")
+      "X-GNOME-Autostart-enabled=false"
+    else
+      "X-GNOME-Autostart-enabled=true"
+    end
   end
 
   def caveats
