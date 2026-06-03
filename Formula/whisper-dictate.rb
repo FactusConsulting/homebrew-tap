@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.38/whisper-dictate-linux-0.3.38.zip"
-  sha256 "5896d4a3c7ac8a3d773996aaf9dcbdd617ff29436afcac1f43fd6d72c28d36ef"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.39/whisper-dictate-linux-0.3.39.zip"
+  sha256 "49b2d80073752f7c0b5c326a7730af7d56b4852e546bd3a1f21a321da7a1409f"
   license "MIT"
 
   depends_on "portaudio"
@@ -133,7 +133,7 @@ end
     icon_dir = Pathname.new(home)/".local/share/icons/hicolor/scalable/apps"
     icon_dir.mkpath
     cp icon_src, icon_dir/"whisper-dictate.svg"
-    system "gtk-update-icon-cache", "-q", (Pathname.new(home)/".local/share/icons/hicolor").to_s
+    quiet_system "gtk-update-icon-cache", "-q", (Pathname.new(home)/".local/share/icons/hicolor").to_s
   rescue Errno::EACCES, Errno::EPERM
     nil
   end
