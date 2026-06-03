@@ -1,15 +1,17 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.28/whisper-dictate-linux-0.3.28.zip"
-  sha256 "28ae8eb53b1af0cebfbb559a596362023f0b37c050e34b3870bb87e9863b37e6"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.29/whisper-dictate-linux-0.3.29.zip"
+  sha256 "63f6ca078e8bd367e914e3b239e4527153643806224c83d39321a79d20f32636"
   license "MIT"
 
   depends_on "portaudio"
   depends_on "python@3.12"
 
   def install
-    libexec.install Dir["whisper-dictate/*"]
+    payload = Dir["whisper-dictate/*"]
+    payload = Dir["*"] if payload.empty?
+    libexec.install payload
     chmod 0755, libexec/"whisper-dictate"
     chmod 0755, libexec/"ubuntu26.04/setup.sh"
 
