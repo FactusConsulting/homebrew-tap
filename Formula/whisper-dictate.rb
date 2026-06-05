@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.47/whisper-dictate-linux-0.3.47.zip"
-  sha256 "08086ed51bd0e4698a5deea15a35538e1bd8947ad91d71c5804f6909be98be04"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.48/whisper-dictate-linux-0.3.48.zip"
+  sha256 "45d5bd8dbf2c0b57d5bf8c8c926303ca953f3b2e7013fa53ecb5e2c661e47a00"
   license "MIT"
 
   depends_on "portaudio"
@@ -175,7 +175,7 @@ end
   end
 
   test do
-    assert_path_exists libexec/"voice_pi.py"
+    assert_path_exists libexec/"src/whisper_dictate/runtime.py"
     assert_path_exists libexec/"whisper-dictate"
     assert_path_exists libexec/"ubuntu26.04/setup.sh"
     assert_match version.to_s, shell_output("#{bin}/whisper-dictate --version")
