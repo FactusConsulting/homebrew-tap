@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.50/whisper-dictate-linux-0.3.50.zip"
-  sha256 "fe9f98620d19adb75af086b142a51578a08ad6162b19e0af7e9a95935f414ab6"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v0.3.51/whisper-dictate-linux-0.3.51.zip"
+  sha256 "7570f2da206a2da2629cd109f9e90b0cbe7ad608a398f2fb27e0d7e21658e5fe"
   license "MIT"
 
   depends_on "portaudio"
@@ -13,7 +13,7 @@ class WhisperDictate < Formula
     payload = Dir["*"] if payload.empty?
     libexec.install payload
     chmod 0755, libexec/"whisper-dictate"
-    chmod 0755, libexec/"ubuntu26.04/setup.sh"
+    chmod 0755, libexec/"packaging/linux/ubuntu26.04/setup.sh"
 
     py = Formula["python@3.12"].opt_bin/"python3.12"
   (bin/"whisper-dictate").write <<~SH
@@ -177,7 +177,7 @@ end
   test do
     assert_path_exists libexec/"src/whisper_dictate/runtime.py"
     assert_path_exists libexec/"whisper-dictate"
-    assert_path_exists libexec/"ubuntu26.04/setup.sh"
+    assert_path_exists libexec/"packaging/linux/ubuntu26.04/setup.sh"
     assert_match version.to_s, shell_output("#{bin}/whisper-dictate --version")
   end
 end
