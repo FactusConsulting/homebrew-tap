@@ -1,7 +1,7 @@
 # token-usage Homebrew formula.
 #
 # Lives in this repo as a TEMPLATE. The release workflow substitutes
-# 0.1.4 and affba4d0268b9e9fea5af43cd206f1b40104d4684980fcb85f5754d569257b6b and PRs the resulting file into
+# 0.1.5 and 1021c17efb35a20e293dea8f0abbac8ed8fb87309d5e4e87541dbc4c36ac7067 and PRs the resulting file into
 # FactusConsulting/homebrew-tap (NOT homebrew-tools).
 #
 # Works on both macOS and Linux (brew on Linux).
@@ -11,10 +11,10 @@
 class TokenUsage < Formula
   desc "Ship ccusage daily aggregates to a self-hosted Langfuse instance"
   homepage "https://github.com/FactusConsulting/token-usage"
-  url "https://github.com/FactusConsulting/token-usage/releases/download/v0.1.4/token-usage-0.1.4.tar.gz"
-  sha256 "affba4d0268b9e9fea5af43cd206f1b40104d4684980fcb85f5754d569257b6b"
+  url "https://github.com/FactusConsulting/token-usage/releases/download/v0.1.5/token-usage-0.1.5.tar.gz"
+  sha256 "1021c17efb35a20e293dea8f0abbac8ed8fb87309d5e4e87541dbc4c36ac7067"
   license "MIT"
-  version "0.1.4"
+  version "0.1.5"
 
   depends_on "node"
   depends_on "python@3.12"
@@ -65,10 +65,16 @@ class TokenUsage < Formula
       token-usage requires these env vars at runtime (see README):
         LANGFUSE_HOST, LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, CCUSAGE_SOURCES
 
+      Put them in a durable .env that survives `brew upgrade` (the Cellar copy
+      does NOT) and is read from any directory:
+        ~/.config/token-usage/.env
+
       Pinned ccusage version: see #{opt_libexec}/CCUSAGE_VERSION
 
-      Test once with:
-        TOKEN_USAGE_DRY_RUN=1 token-usage
+      Test / backfill from anywhere:
+        token-usage --dry-run                 # print, don't send
+        token-usage --since-days 300          # one-off backfill of 300 days
+        token-usage --since 2026-01-01        # backfill from an exact date
     EOS
   end
 
