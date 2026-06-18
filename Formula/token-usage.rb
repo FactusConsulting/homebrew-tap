@@ -1,7 +1,7 @@
 # token-usage Homebrew formula.
 #
 # Lives in this repo as a TEMPLATE. The release workflow substitutes
-# 0.1.4 and affba4d0268b9e9fea5af43cd206f1b40104d4684980fcb85f5754d569257b6b and PRs the resulting file into
+# 0.1.6 and c6d1f1ac141226c80520fab01f423d40ed489bf2e90b219530ef30d849c578dc and PRs the resulting file into
 # FactusConsulting/homebrew-tap (NOT homebrew-tools).
 #
 # Works on both macOS and Linux (brew on Linux).
@@ -11,10 +11,10 @@
 class TokenUsage < Formula
   desc "Ship ccusage daily aggregates to a self-hosted Langfuse instance"
   homepage "https://github.com/FactusConsulting/token-usage"
-  url "https://github.com/FactusConsulting/token-usage/releases/download/v0.1.4/token-usage-0.1.4.tar.gz"
-  sha256 "affba4d0268b9e9fea5af43cd206f1b40104d4684980fcb85f5754d569257b6b"
+  url "https://github.com/FactusConsulting/token-usage/releases/download/v0.1.6/token-usage-0.1.6.tar.gz"
+  sha256 "c6d1f1ac141226c80520fab01f423d40ed489bf2e90b219530ef30d849c578dc"
   license "MIT"
-  version "0.1.4"
+  version "0.1.6"
 
   depends_on "node"
   depends_on "python@3.12"
@@ -47,10 +47,9 @@ class TokenUsage < Formula
            "-r", libexec/"shim/requirements.txt"
 
     # token-usage wrapper: prepend our pinned ccusage to PATH, then run the
-    # shim via the venv python. Honors TOKEN_USAGE_DRY_RUN /
-    # TOKEN_USAGE_HOSTNAME / LANGFUSE_* from the user's env (no .env
-    # required on this install path — brew users typically wire up env via
-    # launchd/systemd).
+    # shim via the venv python. The shim reads its config from
+    # ~/.config/token-usage/.env (XDG-aware), so the wrapper needs no env of
+    # its own — that's also what the brew service below relies on.
     (bin/"token-usage").write <<~SH
       #!/bin/bash
       set -euo pipefail
@@ -60,15 +59,41 @@ class TokenUsage < Formula
     chmod 0755, bin/"token-usage"
   end
 
+  # `brew services start token-usage` registers an hourly importer (a systemd
+  # timer on Linux, launchd on macOS) — no repo clone, no hand-written unit.
+  # The run reads ~/.config/token-usage/.env for everything, including
+  # CCUSAGE_SINCE_DAYS (how many days back each run ships, default 14).
+  service do
+    run [opt_bin/"token-usage"]
+    run_type :interval
+    interval 3600
+    log_path var/"log/token-usage.log"
+    error_log_path var/"log/token-usage.log"
+  end
+
   def caveats
     <<~EOS
-      token-usage requires these env vars at runtime (see README):
-        LANGFUSE_HOST, LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, CCUSAGE_SOURCES
+      1) Create a durable config (survives `brew upgrade`, read from any dir):
+
+           mkdir -p ~/.config/token-usage
+           cp #{opt_libexec}/shim/.env.example ~/.config/token-usage/.env
+           "${EDITOR:-nano}" ~/.config/token-usage/.env
+
+         Fill in LANGFUSE_HOST / LANGFUSE_PUBLIC_KEY / LANGFUSE_SECRET_KEY /
+         CCUSAGE_SOURCES. Set TOKEN_USAGE_HOSTNAME if this machine shares a
+         hostname with another install (e.g. WSL2 vs its Windows host), and
+         CCUSAGE_SINCE_DAYS for how many days each run backfills (default 14).
+
+      2) Start the hourly importer:
+
+           brew services start token-usage
+
+      Run manually / one-off backfill from anywhere:
+           token-usage --dry-run                 # print, don't send
+           token-usage --since-days 300          # backfill 300 days
+           token-usage --since 2026-01-01        # backfill from an exact date
 
       Pinned ccusage version: see #{opt_libexec}/CCUSAGE_VERSION
-
-      Test once with:
-        TOKEN_USAGE_DRY_RUN=1 token-usage
     EOS
   end
 
