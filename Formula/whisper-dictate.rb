@@ -127,7 +127,7 @@ end
       StartupWMClass=whisper-dictate
       #{autostart ? autostart_enabled_line(raw) : ""}
     DESKTOP
-  rescue Errno::EACCES, Errno::EPERM
+  rescue Errno::EACCES, Errno::EPERM, Errno::EROFS
     nil
   end
 
@@ -139,7 +139,7 @@ end
     icon_path.dirname.mkpath
     cp icon_src, icon_path
     quiet_system "gtk-update-icon-cache", "-q", (Pathname.new(home)/".local/share/icons/hicolor").to_s
-  rescue Errno::EACCES, Errno::EPERM
+  rescue Errno::EACCES, Errno::EPERM, Errno::EROFS
     nil
   end
 
