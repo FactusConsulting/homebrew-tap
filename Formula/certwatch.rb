@@ -1,28 +1,28 @@
 class Certwatch < Formula
   desc "Agent-friendly CLI for monitoring SSL/TLS certificate expiry across hosts"
   homepage "https://github.com/FactusConsulting/certwatch"
-  version "0.1.7"
+  version "0.1.8"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/FactusConsulting/certwatch/releases/download/v0.1.7/certwatch-osx-arm64.tar.gz"
-      sha256 "c381c60d9f46dfe5fe5d9986101e0816fc6adcb79ad35db1ca5d7effd9fb793f"
+      url "https://github.com/FactusConsulting/certwatch/releases/download/v0.1.8/certwatch-osx-arm64.tar.gz"
+      sha256 "4db97e0bd6eca5f2c14b8517135f63d4b2468ed471aad56982fbf739118a0f6d"
     end
     on_intel do
-      url "https://github.com/FactusConsulting/certwatch/releases/download/v0.1.7/certwatch-osx-x64.tar.gz"
-      sha256 "53b6daa75a38a3c1ea8aa87d9adec4618748d0c2add70ba95b17bd90771433bc"
+      url "https://github.com/FactusConsulting/certwatch/releases/download/v0.1.8/certwatch-osx-x64.tar.gz"
+      sha256 "f560f422cf293f356550e5df606d70c25619bb2b2cf7509e788d4a21e57c21fc"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/FactusConsulting/certwatch/releases/download/v0.1.7/certwatch-linux-arm64.tar.gz"
-      sha256 "76d63ba171633558c6d9d152ca776a10ac55d6165382227ed0ec9474c821a957"
+      url "https://github.com/FactusConsulting/certwatch/releases/download/v0.1.8/certwatch-linux-arm64.tar.gz"
+      sha256 "0e96fb391b612e2516b4abd027cb7e64227168972c10d8861e9c307c28d58686"
     end
     on_intel do
-      url "https://github.com/FactusConsulting/certwatch/releases/download/v0.1.7/certwatch-linux-x64.tar.gz"
-      sha256 "219b50de31ee8253ca7b9bd48407556cf1fe7e6fc0820bdfccade2e193a1e7a8"
+      url "https://github.com/FactusConsulting/certwatch/releases/download/v0.1.8/certwatch-linux-x64.tar.gz"
+      sha256 "cded1e32e3a0a83ea120aae1aa503b468b5ba61997ca725bb922593e5553899e"
     end
   end
 
