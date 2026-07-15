@@ -1,11 +1,12 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v1.20.8/whisper-dictate-linux-1.20.8.zip"
-  sha256 "bea99759b1c531f15616183476bba47c497bfde308f2b486882baee78455ecf4"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v1.21.0/whisper-dictate-linux-1.21.0.zip"
+  sha256 "0b8a8969f5367c18eb3313f8ac405129c3cc0d7fb0c44be1423a23a8f24b6271"
   license "MIT"
 
   depends_on "portaudio"
+  depends_on "python@3.12"
 
   def install
     payload = Dir["whisper-dictate/*"]
@@ -14,6 +15,7 @@ class WhisperDictate < Formula
     chmod 0755, libexec/"whisper-dictate"
     chmod 0755, libexec/"packaging/linux/ubuntu26.04/setup.sh"
 
+    py = Formula["python@3.12"].opt_bin/"python3.12"
   (bin/"whisper-dictate").write <<~SH
     #!/bin/bash
     install_linux_app_icon() {
@@ -69,6 +71,7 @@ class WhisperDictate < Formula
       repair_linux_desktop_entry "${HOME:-}/.config/autostart/whisper-dictate.desktop" 1
     fi
 
+    export VOICEPI_BOOTSTRAP_PYTHON="#{py}"
     export VOICEPI_APP_ROOT="#{libexec}"
     export VOICEPI_SKIP_SYSCHECK=1
     exec "#{libexec}/whisper-dictate" "$@"
@@ -154,8 +157,8 @@ end
 
   def caveats
     <<~EOS
-      Wave 8 of #348 removed the Python worker; the shipped binary is
-      Rust-only and downloads the selected STT model on demand.
+      whisper-dictate builds a machine-local Python venv on first run
+      (~/.venv-whisper-dictate) and downloads the selected STT model.
 
       Ubuntu 24.04/26.04 Wayland - one-time desktop setup:
 
@@ -172,6 +175,7 @@ end
   end
 
   test do
+    assert_path_exists libexec/"src/whisper_dictate/runtime.py"
     assert_path_exists libexec/"whisper-dictate"
     assert_path_exists libexec/"packaging/linux/ubuntu26.04/setup.sh"
     assert_match version.to_s, shell_output("#{bin}/whisper-dictate --version")
