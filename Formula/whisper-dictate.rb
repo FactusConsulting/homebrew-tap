@@ -1,8 +1,8 @@
 class WhisperDictate < Formula
   desc "Local push-to-talk dictation -- speak prompts instead of typing them"
   homepage "https://github.com/FactusConsulting/whisper-dictate"
-  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v1.25.0/whisper-dictate-linux-1.25.0.zip"
-  sha256 "d6e19ec54ab5cc0eedf959e311a37762dff7e1db7bdd435f6f1c281aaf06ed94"
+  url "https://github.com/FactusConsulting/whisper-dictate/releases/download/v1.25.1/whisper-dictate-linux-1.25.1.zip"
+  sha256 "3643d1dfcc89638ba9420ac7608b279ea20eadfd3ee99174931887d3165114fc"
   license "MIT"
 
   depends_on "portaudio"
@@ -154,7 +154,8 @@ end
 
   def caveats
     <<~EOS
-      whisper-dictate downloads the selected local STT model on first use.
+      Before local dictation, download the selected model in the Speech settings
+      or run: wd models download large-v3-turbo
 
       Ubuntu 24.04/26.04 Wayland - one-time desktop setup:
 
