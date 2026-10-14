@@ -1,7 +1,7 @@
 # token-usage Homebrew formula.
 #
 # Lives in this repo as a TEMPLATE. The release workflow substitutes
-# 0.1.10 and 0b8a19a44007f88bb1e8d1f33a20131c5846580c7b8d3a247f4ee69f4fd1076a and PRs the resulting file into
+# 0.2.1 and d3b94e9aaf9c6582b1d5c4fb7aed138c00d11b183f96b4d092463dc9e83e1bf2 and PRs the resulting file into
 # FactusConsulting/homebrew-tap (NOT homebrew-tools).
 #
 # Works on both macOS and Linux (brew on Linux).
@@ -11,10 +11,10 @@
 class TokenUsage < Formula
   desc "Ship ccusage daily aggregates to a self-hosted Langfuse instance"
   homepage "https://github.com/FactusConsulting/token-usage"
-  url "https://github.com/FactusConsulting/token-usage/releases/download/v0.1.11/token-usage-0.1.11.tar.gz"
-  sha256 "19614b5f43d107d59edbea406bc1341fe115793013982cc46f38478d77a1092e"
+  url "https://github.com/FactusConsulting/token-usage/releases/download/v0.2.1/token-usage-0.2.1.tar.gz"
+  sha256 "d3b94e9aaf9c6582b1d5c4fb7aed138c00d11b183f96b4d092463dc9e83e1bf2"
   license "MIT"
-  version "0.1.11"
+  version "0.2.1"
 
   depends_on "node"
   depends_on "python@3.12"
@@ -90,6 +90,7 @@ class TokenUsage < Formula
 
       Run manually / one-off backfill from anywhere:
            token-usage --dry-run                 # print, don't send
+           token-usage --self-test               # canary round trip
            token-usage --since-days 300          # backfill 300 days
            token-usage --since 2026-01-01        # backfill from an exact date
 
