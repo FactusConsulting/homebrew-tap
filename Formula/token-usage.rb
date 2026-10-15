@@ -1,7 +1,7 @@
 # token-usage Homebrew formula.
 #
 # Lives in this repo as a TEMPLATE. The release workflow substitutes
-# 0.2.0 and d5c7654229e95e1ecd5a022137af1d3f5ca4633cb837da96be2af299f0b20d3d and PRs the resulting file into
+# 0.2.4 and e1a909e0ef81c6dfad4f55c997ba8f44ba6a0136c229c515a0c9d7b422680e2d and PRs the resulting file into
 # FactusConsulting/homebrew-tap (NOT homebrew-tools).
 #
 # Works on both macOS and Linux (brew on Linux).
@@ -14,7 +14,7 @@ class TokenUsage < Formula
   url "https://github.com/FactusConsulting/token-usage/releases/download/v0.2.4/token-usage-0.2.4.tar.gz"
   sha256 "e1a909e0ef81c6dfad4f55c997ba8f44ba6a0136c229c515a0c9d7b422680e2d"
   license "MIT"
-  version "0.2.0"
+  version "0.2.4"
 
   depends_on "node"
   depends_on "python@3.12"
