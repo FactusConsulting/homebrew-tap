@@ -1,7 +1,7 @@
 # token-usage Homebrew formula.
 #
 # Lives in this repo as a TEMPLATE. The release workflow substitutes
-# 0.2.5 and a2aafd6105785b1e50c239d904281dfca0735a44c6fae808d7b05677e9c130d9 and PRs the resulting file into
+# 0.2.6 and 38cd4235395caa9106974dfe2237c23dde5793fe68b4f959377d04dfb8ad62e0 and PRs the resulting file into
 # FactusConsulting/homebrew-tap (NOT homebrew-tools).
 #
 # Works on both macOS and Linux (brew on Linux).
@@ -11,10 +11,10 @@
 class TokenUsage < Formula
   desc "Ship ccusage daily aggregates to a self-hosted Langfuse instance"
   homepage "https://github.com/FactusConsulting/token-usage"
-  url "https://github.com/FactusConsulting/token-usage/releases/download/v0.2.5/token-usage-0.2.5.tar.gz"
-  sha256 "a2aafd6105785b1e50c239d904281dfca0735a44c6fae808d7b05677e9c130d9"
+  url "https://github.com/FactusConsulting/token-usage/releases/download/v0.2.6/token-usage-0.2.6.tar.gz"
+  sha256 "38cd4235395caa9106974dfe2237c23dde5793fe68b4f959377d04dfb8ad62e0"
   license "MIT"
-  version "0.2.5"
+  version "0.2.6"
 
   depends_on "node"
   depends_on "python@3.12"
