@@ -11,8 +11,8 @@
 class TokenUsage < Formula
   desc "Ship ccusage daily aggregates to a self-hosted Langfuse instance"
   homepage "https://github.com/FactusConsulting/token-usage"
-  url "https://github.com/FactusConsulting/token-usage/releases/download/v0.2.9/token-usage-0.2.9.tar.gz"
-  sha256 "f3ae7b769c2537e00064d918df991c5b04e065a58d6c66982d9e8023ba9d9625"
+  url "https://github.com/FactusConsulting/token-usage/releases/download/v0.2.11/token-usage-0.2.11.tar.gz"
+  sha256 "f2e4fed6e92bcf3c941d11703b86ac88da37ed8a370e19c5c6956fe0129164b6"
   license "MIT"
   version "0.2.9"
 
